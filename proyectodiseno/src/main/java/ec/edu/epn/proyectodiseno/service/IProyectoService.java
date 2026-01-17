@@ -4,6 +4,9 @@ package ec.edu.epn.proyectodiseno.service;
 
 import java.util.List;
 
+import ec.edu.epn.proyectodiseno.model.entity.Proyecto;
+import ec.edu.epn.proyectodiseno.model.enums.EstadoProyecto;
+
 public interface IProyectoService {
     
     Proyecto crearProyecto(Proyecto proyecto);

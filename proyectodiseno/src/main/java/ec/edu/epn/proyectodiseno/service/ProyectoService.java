@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import ec.edu.epn.proyectodiseno.model.entity.Personal;
+import ec.edu.epn.proyectodiseno.model.entity.Proyecto;
+import ec.edu.epn.proyectodiseno.model.enums.EstadoProyecto;
 import ec.edu.epn.proyectodiseno.repository.ProyectoRepository;
 
 import java.util.List;

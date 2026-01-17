@@ -4,6 +4,9 @@ package ec.edu.epn.proyectodiseno.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import ec.edu.epn.proyectodiseno.model.entity.Usuario;
+import ec.edu.epn.proyectodiseno.model.enums.TipoRol;
+
 import java.util.List;
 import java.util.Optional;
 

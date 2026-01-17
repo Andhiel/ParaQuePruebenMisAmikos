@@ -6,12 +6,14 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import ec.edu.epn.proyectodiseno.model.entity.DatoBiometrico;
 import ec.edu.epn.proyectodiseno.model.entity.Personal;
+import ec.edu.epn.proyectodiseno.model.entity.RegistroAsistencia;
 import ec.edu.epn.proyectodiseno.model.enums.TipoRegistro;
+import ec.edu.epn.proyectodiseno.service.IBiometriaService;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/biometria")

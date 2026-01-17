@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import ec.edu.epn.proyectodiseno.model.entity.Usuario;
+import ec.edu.epn.proyectodiseno.model.enums.TipoRol;
 import ec.edu.epn.proyectodiseno.service.IUsuarioService;
 
 import java.util.HashMap;

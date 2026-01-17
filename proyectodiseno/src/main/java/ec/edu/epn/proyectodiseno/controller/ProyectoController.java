@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import ec.edu.epn.proyectodiseno.model.entity.Proyecto;
 import ec.edu.epn.proyectodiseno.model.enums.EstadoProyecto;
 import ec.edu.epn.proyectodiseno.service.IProyectoService;
 

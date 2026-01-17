@@ -6,6 +6,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import ec.edu.epn.proyectodiseno.model.entity.Usuario;
+import ec.edu.epn.proyectodiseno.model.enums.TipoRol;
+import ec.edu.epn.proyectodiseno.repository.UsuarioRepository;
+
 import java.util.List;
 import java.util.UUID;
 

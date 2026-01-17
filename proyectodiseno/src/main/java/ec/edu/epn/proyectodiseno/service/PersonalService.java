@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ec.edu.epn.proyectodiseno.model.entity.Personal;
 import ec.edu.epn.proyectodiseno.model.enums.EstadoLaboral;
+import ec.edu.epn.proyectodiseno.repository.PersonalRepository;
 
 import java.util.List;
 import java.util.UUID;

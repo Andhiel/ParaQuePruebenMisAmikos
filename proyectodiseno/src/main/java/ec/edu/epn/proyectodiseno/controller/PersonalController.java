@@ -6,6 +6,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import ec.edu.epn.proyectodiseno.model.entity.Personal;
+import ec.edu.epn.proyectodiseno.model.enums.EstadoLaboral;
+import ec.edu.epn.proyectodiseno.service.IPersonalService;
+
 import java.util.List;
 
 @RestController

@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ec.edu.epn.proyectodiseno.model.entity.Ausencia;
 import ec.edu.epn.proyectodiseno.model.entity.Personal;
+import ec.edu.epn.proyectodiseno.model.entity.Usuario;
 import ec.edu.epn.proyectodiseno.repository.UsuarioRepository;
 import ec.edu.epn.proyectodiseno.repository.AusenciaRepository;
 
@@ -83,8 +84,8 @@ public class AusenciaService implements IAusenciaService {
         List<Ausencia> ausenciasPersonal = ausenciaRepository.findByPersonalId(ausencia.getPersonal().getId());
         
         for (Ausencia a : ausenciasPersonal) {
-            if (a.getEstadoAusencia() != com.sistema.gestion.model.enums.EstadoAusencia.RECHAZADA &&
-                a.getEstadoAusencia() != com.sistema.gestion.model.enums.EstadoAusencia.CANCELADA) {
+            if (a.getEstadoAusencia() != ec.edu.epn.proyectodiseno.model.enums.EstadoAusencia.RECHAZADA &&
+                a.getEstadoAusencia() != ec.edu.epn.proyectodiseno.model.enums.EstadoAusencia.CANCELADA) {
                 
                 if (!(ausencia.getFechaFin().isBefore(a.getFechaInicio()) || 
                       ausencia.getFechaInicio().isAfter(a.getFechaFin()))) {
