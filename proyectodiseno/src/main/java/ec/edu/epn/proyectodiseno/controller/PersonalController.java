@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import ec.edu.epn.proyectodiseno.model.dto.PersonalRegistroDTO;
 import ec.edu.epn.proyectodiseno.model.entity.Personal;
 import ec.edu.epn.proyectodiseno.model.enums.EstadoLaboral;
 import ec.edu.epn.proyectodiseno.service.IPersonalService;
@@ -23,6 +24,12 @@ public class PersonalController {
     @PostMapping
     public ResponseEntity<Personal> registrarPersonal(@RequestBody Personal personal) {
         Personal nuevoPersonal = personalService.registrarPersonal(personal);
+        return new ResponseEntity<>(nuevoPersonal, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/con-proyecto")
+    public ResponseEntity<Personal> registrarPersonalConProyecto(@RequestBody PersonalRegistroDTO dto) {
+        Personal nuevoPersonal = personalService.registrarPersonalConProyecto(dto);
         return new ResponseEntity<>(nuevoPersonal, HttpStatus.CREATED);
     }
 

@@ -1,14 +1,11 @@
 import { useEffect, useState } from "react";
 import { listarAusencias } from "../api/ausenciasService";
-import { listarProyectos } from "../api/proyectosService";
 import {
   Table,
   TableHead,
   TableRow,
   TableCell,
   TableBody,
-  TextField,
-  MenuItem,
   Button,
   Typography,
   Box,
@@ -19,8 +16,6 @@ import RegistrarAusenciaForm from "../components/RegistrarAusenciaForm";
 
 function AusenciasPage() {
   const [ausencias, setAusencias] = useState([]);
-  const [proyectos, setProyectos] = useState([]);
-  const [proyectoSeleccionado, setProyectoSeleccionado] = useState("");
   const [openForm, setOpenForm] = useState(false);
 
   const cargarAusencias = () => {
@@ -29,12 +24,7 @@ function AusenciasPage() {
 
   useEffect(() => {
     cargarAusencias();
-    listarProyectos().then((res) => setProyectos(res.data));
   }, []);
-
-  const ausenciasFiltradas = proyectoSeleccionado
-    ? ausencias.filter((a) => a.proyecto === proyectoSeleccionado)
-    : ausencias;
 
   return (
     <Box sx={{ p: 3 }}>
@@ -49,41 +39,36 @@ function AusenciasPage() {
         </Button>
       </Stack>
 
-      <TextField
-        select
-        label="Filtrar por proyecto"
-        value={proyectoSeleccionado}
-        onChange={(e) => setProyectoSeleccionado(e.target.value)}
-        sx={{ mb: 2, minWidth: 200 }}
-      >
-        <MenuItem value="">Todos</MenuItem>
-        {proyectos.map((p) => (
-          <MenuItem key={p.id} value={p.nombre}>
-            {p.nombre}
-          </MenuItem>
-        ))}
-      </TextField>
-
-      <Table size="small">
+      <Table>
         <TableHead>
           <TableRow>
             <TableCell>Personal</TableCell>
-            <TableCell>Proyecto</TableCell>
-            <TableCell>Fecha</TableCell>
+            <TableCell>Fecha Inicio</TableCell>
+            <TableCell>Fecha Fin</TableCell>
+            <TableCell>Tipo</TableCell>
             <TableCell>Motivo</TableCell>
             <TableCell>Estado</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {ausenciasFiltradas.map((a) => (
-            <TableRow key={a.id}>
-              <TableCell>{a.personal}</TableCell>
-              <TableCell>{a.proyecto}</TableCell>
-              <TableCell>{a.fecha}</TableCell>
-              <TableCell>{a.motivo}</TableCell>
-              <TableCell>{a.estado}</TableCell>
+          {ausencias.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={6} align="center">
+                No hay ausencias registradas
+              </TableCell>
             </TableRow>
-          ))}
+          ) : (
+            ausencias.map((a) => (
+              <TableRow key={a.id}>
+                <TableCell>{a.personal?.nombres} {a.personal?.apellidos}</TableCell>
+                <TableCell>{a.fechaInicio}</TableCell>
+                <TableCell>{a.fechaFin}</TableCell>
+                <TableCell>{a.tipoAusencia}</TableCell>
+                <TableCell>{a.motivo || "-"}</TableCell>
+                <TableCell>{a.estadoAusencia}</TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
       </Table>
 

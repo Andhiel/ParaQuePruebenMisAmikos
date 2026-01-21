@@ -17,9 +17,10 @@ function AppLayout({ usuario, onLogout }) {
   const [pantalla, setPantalla] = useState("Usuarios");
 
   const menuPorRol = {
+    ADMINISTRADOR: ["Usuarios", "Proyectos", "Personal", "Ausencias", "Asistencia", "Contrato"],
     JEFATURA: ["Usuarios", "Proyectos", "Personal", "Ausencias", "Asistencia", "Contrato"],
-    DIRECTOR: ["Proyectos", "Ausencias", "Asistencia"],
-    PASANTE: ["Contrato", "Asistencia"],
+    DIRECTOR_PROYECTO: ["Proyectos", "Ausencias", "Asistencia"],
+    PERSONAL: ["Contrato", "Asistencia"],
   };
 
   return (
@@ -80,8 +81,8 @@ function AppLayout({ usuario, onLogout }) {
             bgcolor: "background.paper",
           }}
         >
-          {menuPorRol[usuario.rol] ? (
-            menuPorRol[usuario.rol].map((item) => (
+          {menuPorRol[usuario.tipoRol] ? (
+            menuPorRol[usuario.tipoRol].map((item) => (
               <Button
                 key={item}
                 fullWidth

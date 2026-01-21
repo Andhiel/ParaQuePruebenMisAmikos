@@ -5,10 +5,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import ec.edu.epn.proyectodiseno.model.dto.PersonalRegistroDTO;
+import ec.edu.epn.proyectodiseno.model.entity.AsignacionProyecto;
+import ec.edu.epn.proyectodiseno.model.entity.Departamento;
 import ec.edu.epn.proyectodiseno.model.entity.Personal;
+import ec.edu.epn.proyectodiseno.model.entity.Proyecto;
 import ec.edu.epn.proyectodiseno.model.enums.EstadoLaboral;
+import ec.edu.epn.proyectodiseno.repository.AsignacionProyectoRepository;
+import ec.edu.epn.proyectodiseno.repository.DepartamentoRepository;
 import ec.edu.epn.proyectodiseno.repository.PersonalRepository;
+import ec.edu.epn.proyectodiseno.repository.ProyectoRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,6 +25,9 @@ import java.util.UUID;
 public class PersonalService implements IPersonalService {
 
     private final PersonalRepository personalRepository;
+    private final ProyectoRepository proyectoRepository;
+    private final DepartamentoRepository departamentoRepository;
+    private final AsignacionProyectoRepository asignacionProyectoRepository;
 
     @Override
     @Transactional
@@ -26,6 +37,50 @@ public class PersonalService implements IPersonalService {
         }
         validarDatosPersonal(personal);
         return personalRepository.save(personal);
+    }
+
+    @Override
+    @Transactional
+    public Personal registrarPersonalConProyecto(PersonalRegistroDTO dto) {
+        // Crear entidad Personal
+        Personal personal = Personal.builder()
+                .codigoInterno(dto.getCodigoInterno() != null && !dto.getCodigoInterno().isEmpty() 
+                        ? dto.getCodigoInterno() : generarCodigoInterno())
+                .nombres(dto.getNombres())
+                .apellidos(dto.getApellidos())
+                .nui(dto.getNui())
+                .fechaNacimiento(dto.getFechaNacimiento())
+                .telefono(dto.getTelefono())
+                .estadoLaboral(dto.getEstadoLaboral() != null ? dto.getEstadoLaboral() : EstadoLaboral.ACTIVO)
+                .build();
+
+        // Asignar departamento si existe
+        if (dto.getDepartamentoId() != null) {
+            Departamento departamento = departamentoRepository.findById(dto.getDepartamentoId())
+                    .orElseThrow(() -> new RuntimeException("Departamento no encontrado"));
+            personal.setDepartamento(departamento);
+        }
+
+        validarDatosPersonal(personal);
+        Personal personalGuardado = personalRepository.save(personal);
+
+        // Crear asignación a proyecto si se proporcionó
+        if (dto.getProyectoId() != null) {
+            Proyecto proyecto = proyectoRepository.findById(dto.getProyectoId())
+                    .orElseThrow(() -> new RuntimeException("Proyecto no encontrado"));
+
+            AsignacionProyecto asignacion = AsignacionProyecto.builder()
+                    .personal(personalGuardado)
+                    .proyecto(proyecto)
+                    .rolEnProyecto(dto.getRolEnProyecto() != null ? dto.getRolEnProyecto() : "MIEMBRO")
+                    .fechaAsignacion(LocalDate.now())
+                    .porcentajeDedicacion(dto.getPorcentajeDedicacion() != null ? dto.getPorcentajeDedicacion() : 100)
+                    .build();
+
+            asignacionProyectoRepository.save(asignacion);
+        }
+
+        return personalGuardado;
     }
 
     @Override

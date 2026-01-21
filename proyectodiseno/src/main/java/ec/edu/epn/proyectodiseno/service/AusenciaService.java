@@ -26,6 +26,11 @@ public class AusenciaService implements IAusenciaService {
         Personal personal = personalService.buscarPorId(personalId);
         ausencia.setPersonal(personal);
         
+        // Establecer estado por defecto si no viene
+        if (ausencia.getEstadoAusencia() == null) {
+            ausencia.setEstadoAusencia(ec.edu.epn.proyectodiseno.model.enums.EstadoAusencia.PENDIENTE);
+        }
+        
         if (validarSolapamiento(ausencia)) {
             throw new RuntimeException("La ausencia se solapa con otra ausencia existente");
         }

@@ -18,11 +18,13 @@ public abstract class Log {
     protected Long id;
 
     @CreatedDate
-    @Column(name = "fecha_creacion", nullable = false, updatable = false, columnDefinition = "TEXT")
+    @Column(name = "fecha_creacion", nullable = false, updatable = false)
+    @Convert(converter = ec.edu.epn.proyectodiseno.config.LocalDateTimeConverter.class)
     protected LocalDateTime fechaCreacion;
 
     @LastModifiedDate
-    @Column(name = "fecha_actualizacion", columnDefinition = "TEXT")
+    @Column(name = "fecha_actualizacion")
+    @Convert(converter = ec.edu.epn.proyectodiseno.config.LocalDateTimeConverter.class)
     protected LocalDateTime fechaActualizacion;
 
     @Column(name = "esta_activo")
