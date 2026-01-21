@@ -36,6 +36,19 @@ public class Contrato extends Log {
     @Column(name = "tipo_contrato", nullable = false)
     private TipoContrato tipoContrato;
 
+    @Lob
+    @Column(name = "documento_pdf", columnDefinition = "BLOB")
+    private byte[] documentoPdf;
+
+    @Column(name = "nombre_archivo", length = 255)
+    private String nombreArchivo;
+
+    @Column(name = "tipo_archivo", length = 100)
+    private String tipoArchivo;
+
+    @Column(name = "tamano_archivo")
+    private Long tamanoArchivo;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "personal_id", nullable = false)
     private Personal personal;
