@@ -24,9 +24,6 @@ import {
 function ProyectosPage() {
   const [proyectos, setProyectos] = useState([]);
   const [openForm, setOpenForm] = useState(false);
-  const [nombre, setNombre] = useState("");
-  const [descripcion, setDescripcion] = useState("");
-  const [estado, setEstado] = useState("");
 
   const cargarProyectos = () => {
     listarProyectos().then((res) => setProyectos(res.data));
@@ -36,8 +33,23 @@ function ProyectosPage() {
     cargarProyectos();
   }, []);
 
-  const handleCrearProyecto = async () => {
-    await crearProyecto({ nombre, descripcion, estado });
+  const handleCrearProyecto = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    
+    const nuevoProyecto = {
+      codigoProyecto: formData.get("codigoProyecto"),
+      titulo: formData.get("titulo"),
+      descripcion: formData.get("descripcion") || null,
+      fechaInicio: formData.get("fechaInicio") || null,
+      fechaFinEstimada: formData.get("fechaFinEstimada") || null,
+      presupuesto: formData.get("presupuesto") ? parseFloat(formData.get("presupuesto")) : null,
+      estadoProyecto: formData.get("estadoProyecto") || "PLANIFICACION",
+      director: formData.get("directorId") ? { id: parseInt(formData.get("directorId")) } : null,
+      departamento: formData.get("departamentoId") ? { id: parseInt(formData.get("departamentoId")) } : null,
+    };
+
+    await crearProyecto(nuevoProyecto);
     cargarProyectos();
     setOpenForm(false);
   };
@@ -57,18 +69,22 @@ function ProyectosPage() {
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>Nombre</TableCell>
+              <TableCell>Código</TableCell>
+              <TableCell>Título</TableCell>
               <TableCell>Descripción</TableCell>
               <TableCell>Estado</TableCell>
+              <TableCell>Presupuesto</TableCell>
               <TableCell align="center">Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {proyectos.map((p) => (
               <TableRow key={p.id}>
-                <TableCell>{p.nombre}</TableCell>
-                <TableCell>{p.descripcion}</TableCell>
-                <TableCell>{p.estado}</TableCell>
+                <TableCell>{p.codigoProyecto}</TableCell>
+                <TableCell>{p.titulo}</TableCell>
+                <TableCell>{p.descripcion || "-"}</TableCell>
+                <TableCell>{p.estadoProyecto}</TableCell>
+                <TableCell>${p.presupuesto || 0}</TableCell>
                 <TableCell align="center">
                   <Button
                     variant="outlined"
@@ -90,19 +106,84 @@ function ProyectosPage() {
       </Button>
 
       {/* Formulario modal */}
-      <Dialog open={openForm} onClose={() => setOpenForm(false)}>
+      <Dialog open={openForm} onClose={() => setOpenForm(false)} fullWidth maxWidth="md">
         <DialogTitle>Crear Proyecto</DialogTitle>
-        <DialogContent>
-          <TextField fullWidth label="Nombre" margin="normal" value={nombre} onChange={(e) => setNombre(e.target.value)} />
-          <TextField fullWidth label="Descripción" margin="normal" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
-          <TextField fullWidth label="Estado" margin="normal" value={estado} onChange={(e) => setEstado(e.target.value)} />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenForm(false)}>Cancelar</Button>
-          <Button variant="contained" onClick={handleCrearProyecto}>
-            Guardar
-          </Button>
-        </DialogActions>
+        <Box component="form" onSubmit={handleCrearProyecto}>
+          <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            <TextField 
+              name="codigoProyecto" 
+              label="Código del Proyecto" 
+              required 
+              helperText="Código único del proyecto"
+            />
+            <TextField 
+              name="titulo" 
+              label="Título" 
+              required 
+              helperText="Nombre del proyecto"
+            />
+            <TextField 
+              name="descripcion" 
+              label="Descripción" 
+              multiline 
+              rows={3}
+            />
+            <Box sx={{ display: "flex", gap: 2 }}>
+              <TextField 
+                name="fechaInicio" 
+                label="Fecha de Inicio" 
+                type="date"
+                InputLabelProps={{ shrink: true }}
+                fullWidth
+              />
+              <TextField 
+                name="fechaFinEstimada" 
+                label="Fecha Fin Estimada" 
+                type="date"
+                InputLabelProps={{ shrink: true }}
+                fullWidth
+              />
+            </Box>
+            <TextField 
+              name="presupuesto" 
+              label="Presupuesto" 
+              type="number"
+              inputProps={{ step: "0.01", min: "0" }}
+              helperText="Presupuesto del proyecto"
+            />
+            <TextField 
+              select 
+              name="estadoProyecto" 
+              label="Estado del Proyecto" 
+              defaultValue="PLANIFICACION"
+              SelectProps={{ native: true }}
+            >
+              <option value="PLANIFICACION">Planificación</option>
+              <option value="EN_PROGRESO">En Progreso</option>
+              <option value="COMPLETADO">Completado</option>
+              <option value="CANCELADO">Cancelado</option>
+              <option value="SUSPENDIDO">Suspendido</option>
+            </TextField>
+            <TextField 
+              name="directorId" 
+              label="ID Director" 
+              type="number"
+              helperText="Opcional: ID del usuario director del proyecto"
+            />
+            <TextField 
+              name="departamentoId" 
+              label="ID Departamento" 
+              type="number"
+              helperText="Opcional: ID del departamento responsable"
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenForm(false)}>Cancelar</Button>
+            <Button type="submit" variant="contained">
+              Guardar
+            </Button>
+          </DialogActions>
+        </Box>
       </Dialog>
     </Box>
   );

@@ -14,7 +14,9 @@ import { listarPersonal } from "../api/personalService";
 function RegistrarAusenciaForm({ open, onClose, onSuccess }) {
   const [personal, setPersonal] = useState([]);
   const [personalId, setPersonalId] = useState("");
-  const [fecha, setFecha] = useState("");
+  const [fechaInicio, setFechaInicio] = useState("");
+  const [fechaFin, setFechaFin] = useState("");
+  const [tipoAusencia, setTipoAusencia] = useState("");
   const [motivo, setMotivo] = useState("");
 
   useEffect(() => {
@@ -23,12 +25,24 @@ function RegistrarAusenciaForm({ open, onClose, onSuccess }) {
 
   const handleSubmit = async () => {
     try {
-      const data = { fecha, motivo };
+      const data = { 
+        fechaInicio, 
+        fechaFin, 
+        tipoAusencia,
+        motivo 
+      };
       await notificarAusencia(personalId, data);
       onSuccess(); // refresca la lista en AusenciasPage
       onClose();
+      // Limpiar campos
+      setPersonalId("");
+      setFechaInicio("");
+      setFechaFin("");
+      setTipoAusencia("");
+      setMotivo("");
     } catch (err) {
       console.error("Error al registrar ausencia", err);
+      alert("Error al registrar ausencia: " + (err.response?.data?.message || err.message));
     }
   };
 
@@ -46,7 +60,7 @@ function RegistrarAusenciaForm({ open, onClose, onSuccess }) {
         >
           {personal.map((p) => (
             <MenuItem key={p.id} value={p.id}>
-              {p.nombre}
+              {p.nombres} {p.apellidos}
             </MenuItem>
           ))}
         </TextField>
@@ -54,17 +68,47 @@ function RegistrarAusenciaForm({ open, onClose, onSuccess }) {
         <TextField
           fullWidth
           type="date"
-          label="Fecha"
+          label="Fecha Inicio"
           margin="normal"
           InputLabelProps={{ shrink: true }}
-          value={fecha}
-          onChange={(e) => setFecha(e.target.value)}
+          value={fechaInicio}
+          onChange={(e) => setFechaInicio(e.target.value)}
+          required
         />
+
+        <TextField
+          fullWidth
+          type="date"
+          label="Fecha Fin"
+          margin="normal"
+          InputLabelProps={{ shrink: true }}
+          value={fechaFin}
+          onChange={(e) => setFechaFin(e.target.value)}
+          required
+        />
+
+        <TextField
+          select
+          fullWidth
+          label="Tipo de Ausencia"
+          margin="normal"
+          value={tipoAusencia}
+          onChange={(e) => setTipoAusencia(e.target.value)}
+          required
+        >
+          <MenuItem value="VACACIONES">Vacaciones</MenuItem>
+          <MenuItem value="ENFERMEDAD">Enfermedad</MenuItem>
+          <MenuItem value="PERMISO_PERSONAL">Permiso Personal</MenuItem>
+          <MenuItem value="LICENCIA_MATERNIDAD">Licencia de Maternidad</MenuItem>
+          <MenuItem value="SUSPENSION">Suspensión</MenuItem>
+        </TextField>
 
         <TextField
           fullWidth
           label="Motivo"
           margin="normal"
+          multiline
+          rows={3}
           value={motivo}
           onChange={(e) => setMotivo(e.target.value)}
         />

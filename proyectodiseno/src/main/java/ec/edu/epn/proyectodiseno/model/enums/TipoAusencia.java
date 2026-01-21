@@ -5,5 +5,6 @@ public enum TipoAusencia {
     ENFERMEDAD,
     PERMISO_PERSONAL,
     LICENCIA_MATERNIDAD,
-    SUSPENSION
+    SUSPENSION,
+    OTRO
 }

@@ -1,6 +1,8 @@
 package ec.edu.epn.proyectodiseno.model.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -45,26 +47,32 @@ public class Personal extends Log {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "departamento_id")
+    @JsonIgnoreProperties({"personal", "proyectos"})
     private Departamento departamento;
 
     @OneToMany(mappedBy = "personal", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
+    @JsonIgnore
     private Set<Contrato> contratos = new HashSet<>();
 
     @OneToMany(mappedBy = "personal", fetch = FetchType.LAZY)
     @Builder.Default
+    @JsonIgnore
     private Set<AsignacionProyecto> asignaciones = new HashSet<>();
 
     @OneToMany(mappedBy = "personal", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
+    @JsonIgnore
     private Set<DatoBiometrico> datosBiometricos = new HashSet<>();
 
     @OneToMany(mappedBy = "personal", fetch = FetchType.LAZY)
     @Builder.Default
+    @JsonIgnore
     private Set<RegistroAsistencia> registrosAsistencia = new HashSet<>();
 
     @OneToMany(mappedBy = "personal", fetch = FetchType.LAZY)
     @Builder.Default
+    @JsonIgnore
     private Set<Ausencia> ausencias = new HashSet<>();
 
     public void agregarContrato(Contrato contrato) {

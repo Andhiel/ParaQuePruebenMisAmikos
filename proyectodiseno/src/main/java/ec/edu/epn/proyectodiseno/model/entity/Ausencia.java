@@ -1,6 +1,7 @@
 package ec.edu.epn.proyectodiseno.model.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,6 +23,7 @@ public class Ausencia extends Log {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "personal_id", nullable = false)
+    @JsonIgnoreProperties({"ausencias", "contratos", "asignaciones", "datosBiometricos", "registrosAsistencia"})
     private Personal personal;
 
     @Column(name = "fecha_inicio", nullable = false)
@@ -47,6 +49,7 @@ public class Ausencia extends Log {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "aprobador_id")
+    @JsonIgnoreProperties({"proyectosDirigidos", "ausenciasAprobadas", "departamento"})
     private Usuario aprobador;
 
     @Column(name = "fecha_aprobacion")

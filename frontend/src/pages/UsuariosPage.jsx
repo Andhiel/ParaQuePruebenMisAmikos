@@ -134,9 +134,10 @@ function UsuariosPage() {
             <MenuItem value="" disabled>
               Selecciona un rol
             </MenuItem>
+            <MenuItem value="ADMINISTRADOR">ADMINISTRADOR</MenuItem>
+            <MenuItem value="DIRECTOR_PROYECTO">DIRECTOR PROYECTO</MenuItem>
             <MenuItem value="JEFATURA">JEFATURA</MenuItem>
-            <MenuItem value="DIRECTOR">DIRECTOR</MenuItem>
-            <MenuItem value="PASANTE">PASANTE</MenuItem>
+            <MenuItem value="PERSONAL">PERSONAL</MenuItem>
           </Select>
         </DialogContent>
         <DialogActions>
