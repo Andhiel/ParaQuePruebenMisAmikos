@@ -18,11 +18,11 @@ public abstract class Log {
     protected Long id;
 
     @CreatedDate
-    @Column(name = "fecha_creacion", nullable = false, updatable = false)
+    @Column(name = "fecha_creacion", nullable = false, updatable = false, columnDefinition = "TEXT")
     protected LocalDateTime fechaCreacion;
 
     @LastModifiedDate
-    @Column(name = "fecha_actualizacion")
+    @Column(name = "fecha_actualizacion", columnDefinition = "TEXT")
     protected LocalDateTime fechaActualizacion;
 
     @Column(name = "esta_activo")

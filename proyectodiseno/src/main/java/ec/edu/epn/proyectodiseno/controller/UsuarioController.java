@@ -6,13 +6,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import ec.edu.epn.proyectodiseno.model.dto.LoginRequest;
+import ec.edu.epn.proyectodiseno.model.dto.LoginResponse;
+import ec.edu.epn.proyectodiseno.model.dto.RegistroUsuarioRequest;
 import ec.edu.epn.proyectodiseno.model.entity.Usuario;
 import ec.edu.epn.proyectodiseno.model.enums.TipoRol;
 import ec.edu.epn.proyectodiseno.service.IUsuarioService;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -21,6 +22,75 @@ import java.util.Map;
 public class UsuarioController {
 
     private final IUsuarioService usuarioService;
+
+    /**
+     * Registrar un nuevo usuario con contraseña encriptada
+     */
+    @PostMapping("/registro")
+    public ResponseEntity<LoginResponse.UsuarioDTO> registrarUsuario(@RequestBody RegistroUsuarioRequest request) {
+        Usuario usuario = Usuario.builder()
+                .nombre(request.getNombre())
+                .correo(request.getCorreo())
+                .contrasena(request.getContrasena())
+                .tipoRol(request.getTipoRol())
+                .build();
+        
+        Usuario nuevoUsuario = usuarioService.registrarUsuario(usuario);
+        
+        LoginResponse.UsuarioDTO responseDto = LoginResponse.UsuarioDTO.builder()
+                .id(nuevoUsuario.getId())
+                .codigo(nuevoUsuario.getCodigo())
+                .nombre(nuevoUsuario.getNombre())
+                .correo(nuevoUsuario.getCorreo())
+                .tipoRol(nuevoUsuario.getTipoRol())
+                .build();
+        
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+    }
+
+    /**
+     * Login - Autenticar usuario con email y contraseña
+     */
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+        try {
+            boolean autenticado = usuarioService.autenticar(request.getCorreo(), request.getContrasena());
+            
+            if (autenticado) {
+                Usuario usuario = usuarioService.buscarPorCorreo(request.getCorreo());
+                
+                LoginResponse.UsuarioDTO usuarioDto = LoginResponse.UsuarioDTO.builder()
+                        .id(usuario.getId())
+                        .codigo(usuario.getCodigo())
+                        .nombre(usuario.getNombre())
+                        .correo(usuario.getCorreo())
+                        .tipoRol(usuario.getTipoRol())
+                        .build();
+                
+                LoginResponse response = LoginResponse.builder()
+                        .autenticado(true)
+                        .mensaje("Autenticación exitosa")
+                        .usuario(usuarioDto)
+                        .build();
+                
+                return ResponseEntity.ok(response);
+            } else {
+                LoginResponse response = LoginResponse.builder()
+                        .autenticado(false)
+                        .mensaje("Credenciales inválidas")
+                        .build();
+                
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            }
+        } catch (RuntimeException e) {
+            LoginResponse response = LoginResponse.builder()
+                    .autenticado(false)
+                    .mensaje("Usuario no encontrado")
+                    .build();
+            
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+    }
 
     @PostMapping
     public ResponseEntity<Usuario> registrarUsuario(@RequestBody Usuario usuario) {
@@ -63,6 +133,67 @@ public class UsuarioController {
         List<Usuario> usuarios = usuarioService.listarTodos();
         return ResponseEntity.ok(usuarios);
     }
+    
+    /**
+     * DEBUG: Listar todos los usuarios incluyendo inactivos
+     */
+    @GetMapping("/debug/todos")
+    public ResponseEntity<?> listarTodosDebug() {
+        try {
+            // Usar el repositorio directamente para bypass cualquier filtro
+            List<Usuario> usuarios = usuarioService.listarTodos();
+            
+            // Si no hay usuarios, mostrar información adicional
+            if (usuarios.isEmpty()) {
+                return ResponseEntity.ok()
+                    .body(java.util.Map.of(
+                        "mensaje", "No se encontraron usuarios en la base de datos",
+                        "count", 0,
+                        "database", "Verificar: proyectodiseno/src/main/java/ec/edu/epn/proyectodiseno/database/database.db"
+                    ));
+            }
+            
+            return ResponseEntity.ok(usuarios);
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                .body(java.util.Map.of(
+                    "error", e.getMessage(),
+                    "type", e.getClass().getSimpleName()
+                ));
+        }
+    }
+    
+    /**
+     * DEBUG: Crear usuario de prueba
+     */
+    @PostMapping("/debug/crear-admin")
+    public ResponseEntity<?> crearUsuarioAdmin() {
+        try {
+            Usuario admin = Usuario.builder()
+                    .nombre("Administrador Sistema")
+                    .correo("admin@sistema.com")
+                    .contrasena("admin123")
+                    .tipoRol(TipoRol.ADMINISTRADOR)
+                    .build();
+            
+            Usuario creado = usuarioService.registrarUsuario(admin);
+            
+            return ResponseEntity.ok()
+                .body(java.util.Map.of(
+                    "mensaje", "Usuario administrador creado exitosamente",
+                    "id", creado.getId(),
+                    "codigo", creado.getCodigo(),
+                    "correo", creado.getCorreo(),
+                    "nombre", creado.getNombre()
+                ));
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                .body(java.util.Map.of(
+                    "error", e.getMessage(),
+                    "type", e.getClass().getSimpleName()
+                ));
+        }
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
@@ -70,21 +201,13 @@ public class UsuarioController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Endpoint legacy - Mantener compatibilidad con frontend antiguo
+     * @deprecated Usar /login en su lugar
+     */
     @PostMapping("/autenticar")
-    public ResponseEntity<Map<String, Object>> autenticar(@RequestBody Map<String, String> credenciales) {
-        String correo = credenciales.get("correo");
-        String contrasena = credenciales.get("contrasena");
-        
-        boolean autenticado = usuarioService.autenticar(correo, contrasena);
-        
-        Map<String, Object> response = new HashMap<>();
-        response.put("autenticado", autenticado);
-        
-        if (autenticado) {
-            Usuario usuario = usuarioService.buscarPorCorreo(correo);
-            response.put("usuario", usuario);
-        }
-        
-        return ResponseEntity.ok(response);
+    @Deprecated
+    public ResponseEntity<LoginResponse> autenticar(@RequestBody LoginRequest request) {
+        return login(request);
     }
 }
