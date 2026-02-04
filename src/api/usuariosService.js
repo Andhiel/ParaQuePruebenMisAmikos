@@ -1,6 +1,36 @@
 import api from "./axios";
+import emailNotifications from "../services/emailNotifications.js";
 
-export const registro = (usuario) => api.post("/usuarios", usuario);
+export const registro = async (usuario) => {
+  try {
+    const response = await api.post("/usuarios", usuario);
+    
+    // Enviar notificación por correo según el rol
+    if (usuario.rol === 'DIRECTOR_DE_PROYECTO') {
+      await emailNotifications.notificarCredencialesDirector({
+        nombre: usuario.nombre,
+        email: usuario.correo,
+        usuario: usuario.correo, // o el usuario que se genere
+        contrasena: usuario.contrasena,
+        codigo: usuario.codigo
+      });
+    } else if (usuario.rol === 'AYUDANTE') {
+      await emailNotifications.notificarCredencialesPersonal({
+        nombre: usuario.nombre,
+        email: usuario.correo,
+        usuario: usuario.correo,
+        contrasena: usuario.contrasena,
+        rol: usuario.rol,
+        codigo: usuario.codigo
+      });
+    }
+    
+    return response;
+  } catch (error) {
+    console.error('Error en registro con notificación:', error);
+    throw error;
+  }
+};
 export const login = (credenciales) =>
   api.post("/usuarios/autenticar", credenciales);
 export const modificarUsuario = (id, usuario) => api.put(`/usuarios/${id}`, usuario);

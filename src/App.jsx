@@ -11,6 +11,7 @@ import Diagnostic from "./components/Diagnostic";
 import TestSimple from "./components/TestSimple";
 import TestBasico from "./components/TestBasico";
 import TestFuncional from "./components/TestFuncional";
+import NotificationTester from "./components/NotificationTester";
 
 const theme = createTheme({
   palette: {
@@ -50,6 +51,7 @@ function App() {
           <Route path="/test-simple" element={<TestSimple />} />
           <Route path="/test-basico" element={<TestBasico />} />
           <Route path="/test-funcional" element={<TestFuncional />} />
+          <Route path="/test-notificaciones" element={<NotificationTester />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
